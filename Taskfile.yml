@@ -1,0 +1,59 @@
+version: '3'
+
+
+tasks:
+  deps:uv:setup:
+    desc: Installs UV
+    cmds:
+      - pip install uv
+
+  deps:install:dev:
+    desc: Install dev dependencies
+    deps:
+      - deps:uv:setup
+    cmds:
+      - uv pip install -r requirements-dev.txt
+
+  deps:install:
+    desc: Install dependencies
+    deps:
+        - deps:uv:setup
+    cmds:
+      - uv pip install -r requirements.txt
+
+  start:
+    desc: starts the app
+    cmds:
+      - python src/main.py
+
+  test:
+    desc: runs the tests
+    cmds:
+      - pytest tests
+
+  code:lint:
+    desc: checks if the code is formatted correctly
+    cmds:
+      - ruff check src tests
+
+  code:format:
+    desc: formats the code
+    cmds:
+      - ruff format src tests
+
+  code:typecheck:
+    desc: checks if the code is typed correctly
+    cmds:
+      - mypy src tests
+
+  code:check:
+    desc: checks if the code is formatted, linted, and typed correctly
+    deps:
+      - code:typecheck
+      - code:lint
+
+  code:fix:
+    desc: formats, lints, and types the code
+    deps:
+      - code:typecheck
+      - code:format
